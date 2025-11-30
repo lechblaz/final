@@ -24,6 +24,7 @@ def get_default_user(db: Session) -> User:
 async def list_transactions(
     from_date: Optional[date] = Query(None, description="Start date"),
     to_date: Optional[date] = Query(None, description="End date"),
+    tag_ids: Optional[str] = Query(None, description="Comma-separated tag IDs to filter by (AND logic)"),
     limit: int = Query(50, ge=1, le=500),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db)
@@ -34,6 +35,7 @@ async def list_transactions(
     Args:
         from_date: Filter by booking date >= from_date
         to_date: Filter by booking date <= to_date
+        tag_ids: Comma-separated tag IDs (transactions must have ALL tags)
         limit: Number of results (max 500)
         offset: Offset for pagination
         db: Database session
@@ -56,6 +58,22 @@ async def list_transactions(
         query = query.filter(TransactionModel.booking_date >= from_date)
     if to_date:
         query = query.filter(TransactionModel.booking_date <= to_date)
+
+    # Apply tag filters (AND logic - transaction must have ALL specified tags)
+    if tag_ids:
+        tag_id_list = [tid.strip() for tid in tag_ids.split(',') if tid.strip()]
+        if tag_id_list:
+            for tag_id in tag_id_list:
+                try:
+                    tag_uuid = UUID(tag_id)
+                    # Join with TransactionTag for each tag to ensure ALL tags are present
+                    query = query.join(
+                        TransactionTag,
+                        (TransactionTag.transaction_id == TransactionModel.id) &
+                        (TransactionTag.tag_id == tag_uuid)
+                    )
+                except ValueError:
+                    raise HTTPException(status_code=400, detail=f"Invalid tag ID format: {tag_id}")
 
     # Get total count
     total = query.count()

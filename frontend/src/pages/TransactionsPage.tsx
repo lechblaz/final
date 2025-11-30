@@ -14,10 +14,11 @@ export default function TransactionsPage() {
   const queryClient = useQueryClient()
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['transactions', fromDate, toDate, page],
+    queryKey: ['transactions', fromDate, toDate, selectedTags, page],
     queryFn: () => transactionsApi.getTransactions({
       from_date: fromDate || undefined,
       to_date: toDate || undefined,
+      tag_ids: selectedTags.length > 0 ? selectedTags.join(',') : undefined,
       limit: pageSize,
       offset: (page - 1) * pageSize,
     }),
@@ -53,14 +54,6 @@ export default function TransactionsPage() {
   }
 
   const totalPages = data ? Math.ceil(data.total / pageSize) : 0
-
-  // Filter transactions by selected tags (client-side)
-  const filteredTransactions = data?.transactions.filter(transaction => {
-    if (selectedTags.length === 0) return true
-    return selectedTags.every(tagId =>
-      transaction.tags.some(tag => tag.id === tagId)
-    )
-  }) || []
 
   return (
     <div className="container">
@@ -158,7 +151,7 @@ export default function TransactionsPage() {
         {/* Stats */}
         {data && (
           <div style={{ marginBottom: '20px', color: '#6b7280', fontSize: '14px' }}>
-            Showing {filteredTransactions.length} of {data.total} transactions
+            Showing {data.transactions.length} of {data.total} transactions
             {selectedTags.length > 0 && ` (filtered by ${selectedTags.length} tag${selectedTags.length > 1 ? 's' : ''})`}
             {totalPages > 1 && ` (Page ${page} of ${totalPages})`}
           </div>
@@ -178,7 +171,7 @@ export default function TransactionsPage() {
       )}
 
       {/* Transactions table */}
-      {data && filteredTransactions.length > 0 && (
+      {data && data.transactions.length > 0 && (
         <div className="card">
           <table className="table">
             <thead>
@@ -191,7 +184,7 @@ export default function TransactionsPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredTransactions.map((transaction) => (
+              {data.transactions.map((transaction) => (
                 <tr key={transaction.id}>
                   <td style={{ whiteSpace: 'nowrap' }}>
                     {formatDate(transaction.booking_date)}
@@ -374,7 +367,7 @@ export default function TransactionsPage() {
       )}
 
       {/* Empty state */}
-      {data && filteredTransactions.length === 0 && !isLoading && (
+      {data && data.transactions.length === 0 && !isLoading && (
         <div className="card" style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
           <p>No transactions found.</p>
           <p style={{ marginTop: '10px' }}>

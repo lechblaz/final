@@ -7,6 +7,7 @@ import type { Transaction, TransactionListResponse } from '../types/transaction'
 export interface TransactionFilters {
   from_date?: string;
   to_date?: string;
+  tag_ids?: string;
   limit?: number;
   offset?: number;
 }
