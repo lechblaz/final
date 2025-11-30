@@ -1,5 +1,5 @@
 """Tag schemas."""
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, List
 from datetime import datetime
 from uuid import UUID
@@ -7,15 +7,20 @@ from uuid import UUID
 
 class TagBase(BaseModel):
     """Base tag schema."""
-    display_name: str
+    name: str = Field(..., min_length=1, max_length=100)
+    display_name: Optional[str] = None
     color: Optional[str] = None
     icon: Optional[str] = None
     description: Optional[str] = None
 
 
-class TagCreate(TagBase):
+class TagCreate(BaseModel):
     """Schema for creating tags."""
-    pass
+    name: str = Field(..., min_length=1, max_length=100)
+    display_name: Optional[str] = None
+    color: Optional[str] = None
+    icon: Optional[str] = None
+    description: Optional[str] = None
 
 
 class TagUpdate(BaseModel):
@@ -28,11 +33,14 @@ class TagUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class Tag(TagBase):
+class Tag(BaseModel):
     """Schema for tag responses."""
     id: UUID
-    user_id: UUID
     name: str
+    display_name: str
+    color: Optional[str] = None
+    icon: Optional[str] = None
+    description: Optional[str] = None
     usage_count: int
     created_at: datetime
     updated_at: datetime
@@ -40,7 +48,41 @@ class Tag(TagBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class TagList(BaseModel):
-    """Schema for tag list."""
-    tags: List[Tag]
+class TagWithStats(Tag):
+    """Tag with transaction statistics."""
+    transaction_count: int = 0
+
+
+class TagListResponse(BaseModel):
+    """Response for tag list."""
+    tags: List[TagWithStats]
     total: int
+
+
+# ============================================
+# Transaction Tagging Schemas
+# ============================================
+
+class TransactionTagCreate(BaseModel):
+    """Schema for creating a transaction-tag association."""
+    transaction_id: UUID
+    tag_id: UUID
+    source: str = 'manual'
+    confidence: Optional[float] = 1.0
+
+
+class TransactionTagsUpdate(BaseModel):
+    """Schema for updating tags on a transaction."""
+    tag_ids: List[UUID] = Field(default_factory=list)
+
+
+class TransactionTag(BaseModel):
+    """Full transaction-tag schema."""
+    id: UUID
+    transaction_id: UUID
+    tag_id: UUID
+    source: str
+    confidence: Optional[float]
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
