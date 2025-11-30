@@ -75,6 +75,7 @@ class ImportService:
         # Step 4: Import transactions
         imported_count = 0
         duplicate_count = 0
+        seen_hashes = set()  # Track hashes in current import to handle intra-file duplicates
 
         for txn_data in data['transactions']:
             # Compute transaction hash
@@ -86,7 +87,11 @@ class ImportService:
                 title=txn_data['title']
             )
 
-            # Check for duplicate transaction
+            # Check for duplicate transaction (in DB or in current import)
+            if txn_hash in seen_hashes:
+                duplicate_count += 1
+                continue
+
             existing_txn = self.db.query(Transaction).filter(
                 Transaction.transaction_hash == txn_hash
             ).first()
@@ -94,6 +99,9 @@ class ImportService:
             if existing_txn:
                 duplicate_count += 1
                 continue
+
+            # Mark as seen for this import session
+            seen_hashes.add(txn_hash)
 
             # Create transaction
             transaction = Transaction(

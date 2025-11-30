@@ -63,15 +63,15 @@ class MBankCSVParser:
 
             elif line.startswith('#Rodzaj rachunku'):
                 if i + 1 < len(self.lines):
-                    metadata['account_type'] = self.lines[i + 1].strip()
+                    metadata['account_type'] = self.lines[i + 1].strip().rstrip(';')
 
             elif line.startswith('#Waluta'):
                 if i + 1 < len(self.lines):
-                    metadata['currency'] = self.lines[i + 1].strip()
+                    metadata['currency'] = self.lines[i + 1].strip().rstrip(';')
 
             elif line.startswith('#Numer rachunku'):
                 if i + 1 < len(self.lines):
-                    account_num = self.lines[i + 1].strip().replace(' ', '')
+                    account_num = self.lines[i + 1].strip().rstrip(';').replace(' ', '')
                     metadata['account_number'] = account_num
 
             elif line.startswith('#Saldo początkowe'):

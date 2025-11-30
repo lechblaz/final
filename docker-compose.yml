@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:16-alpine
@@ -28,7 +26,7 @@ services:
       DATABASE_URL: postgresql://finance_user:dev_password_change_in_prod@db:5432/finance_db
       SECRET_KEY: dev_secret_key_change_in_prod_minimum_32_chars
       ENVIRONMENT: development
-      ALLOWED_ORIGINS: http://localhost:5173
+      ALLOWED_ORIGINS: '["http://localhost:5173"]'
     volumes:
       - ./backend:/app
       - /app/__pycache__

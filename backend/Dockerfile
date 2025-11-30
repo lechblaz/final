@@ -12,8 +12,8 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Download spaCy Polish model
-RUN python -m spacy download pl_core_news_md
+# Download spaCy Polish model (TODO: Enable in Phase 5)
+# RUN python -m spacy download pl_core_news_md
 
 # Copy application code
 COPY . .
