@@ -5,6 +5,7 @@ from uuid import UUID
 
 from app.models import ImportBatch, Transaction, User
 from app.services.csv_parser import MBankCSVParser
+from app.services.merchant_extractor import MerchantExtractor
 from app.core.hashing import compute_transaction_hash
 
 
@@ -21,6 +22,7 @@ class ImportService:
         """
         self.db = db
         self.user_id = user_id
+        self.merchant_extractor = MerchantExtractor()
 
     async def import_mbank_csv(
         self,
@@ -103,6 +105,9 @@ class ImportService:
             # Mark as seen for this import session
             seen_hashes.add(txn_hash)
 
+            # Extract merchant information
+            merchant_info = self.merchant_extractor.extract(txn_data['title'])
+
             # Create transaction
             transaction = Transaction(
                 user_id=self.user_id,
@@ -116,7 +121,13 @@ class ImportService:
                 account_number=txn_data['account_number'],
                 amount=txn_data['amount'],
                 balance_after=txn_data['balance_after'],
-                currency=data['metadata'].get('currency', 'PLN')
+                currency=data['metadata'].get('currency', 'PLN'),
+                # Merchant enrichment (Phase 2)
+                normalized_merchant_name=merchant_info.merchant_name,
+                store_identifier=merchant_info.store_identifier,
+                location_extracted=merchant_info.location_extracted,
+                raw_merchant_text=merchant_info.raw_merchant_text,
+                merchant_confidence=merchant_info.confidence
             )
 
             self.db.add(transaction)

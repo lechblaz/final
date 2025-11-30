@@ -59,10 +59,14 @@ class Transaction(Base):
     balance_after = Column(Numeric(15, 2))
     currency = Column(String(3), default="PLN")
 
-    # Enrichment
+    # Enrichment - Merchant details
     merchant_id = Column(UUID(as_uuid=True), ForeignKey("merchants.id", ondelete="SET NULL"))
-    normalized_merchant_name = Column(String(255))
+    normalized_merchant_name = Column(String(255), index=True)
     merchant_confidence = Column(Numeric(3, 2))
+    store_id = Column(UUID(as_uuid=True), ForeignKey("stores.id", ondelete="SET NULL"))
+    store_identifier = Column(String(100))
+    location_extracted = Column(String(255), index=True)
+    raw_merchant_text = Column(Text)
 
     # User fields
     notes = Column(Text)
@@ -75,6 +79,7 @@ class Transaction(Base):
     # Relationships
     import_batch = relationship("ImportBatch", back_populates="transactions")
     merchant = relationship("Merchant", back_populates="transactions")
+    store = relationship("Store", back_populates="transactions")
     transaction_tags = relationship("TransactionTag", back_populates="transaction", cascade="all, delete-orphan")
 
     def __repr__(self):

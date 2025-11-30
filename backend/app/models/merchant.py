@@ -25,6 +25,7 @@ class Merchant(Base):
     # Relationships
     patterns = relationship("MerchantPattern", back_populates="merchant", cascade="all, delete-orphan")
     default_tags = relationship("MerchantDefaultTag", back_populates="merchant", cascade="all, delete-orphan")
+    stores = relationship("Store", back_populates="merchant", cascade="all, delete-orphan")
     transactions = relationship("Transaction", back_populates="merchant")
 
     def __repr__(self):
