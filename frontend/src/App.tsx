@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import TransactionsPage from './pages/TransactionsPage'
 import ImportPage from './pages/ImportPage'
 import MerchantsPage from './pages/MerchantsPage'
+import TagsPage from './pages/TagsPage'
 
 function App() {
   return (
@@ -22,6 +23,9 @@ function App() {
               <Link to="/merchants" style={{ color: 'white', textDecoration: 'none' }}>
                 Merchants
               </Link>
+              <Link to="/tags" style={{ color: 'white', textDecoration: 'none' }}>
+                Tags
+              </Link>
               <Link to="/import" style={{ color: 'white', textDecoration: 'none' }}>
                 Import CSV
               </Link>
@@ -32,6 +36,7 @@ function App() {
         <Routes>
           <Route path="/" element={<TransactionsPage />} />
           <Route path="/merchants" element={<MerchantsPage />} />
+          <Route path="/tags" element={<TagsPage />} />
           <Route path="/import" element={<ImportPage />} />
         </Routes>
       </div>

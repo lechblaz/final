@@ -81,6 +81,7 @@ class Transaction(Base):
     merchant = relationship("Merchant", back_populates="transactions")
     store = relationship("Store", back_populates="transactions")
     transaction_tags = relationship("TransactionTag", back_populates="transaction", cascade="all, delete-orphan")
+    tags = relationship("Tag", secondary="transaction_tags", viewonly=True)
 
     def __repr__(self):
         return f"<Transaction {self.booking_date} - {self.amount} {self.currency}>"

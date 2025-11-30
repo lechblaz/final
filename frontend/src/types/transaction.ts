@@ -2,6 +2,18 @@
  * Transaction types matching backend API
  */
 
+export interface Tag {
+  id: string;
+  name: string;
+  display_name: string;
+  color: string | null;
+  icon: string | null;
+  description: string | null;
+  usage_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Transaction {
   id: string;
   user_id: string;
@@ -21,6 +33,8 @@ export interface Transaction {
   location_extracted: string | null;
   raw_merchant_text: string | null;
   merchant_confidence: number | null;
+  // Tags (Phase 3)
+  tags: Tag[];
   notes: string | null;
   is_hidden: boolean;
   created_at: string;

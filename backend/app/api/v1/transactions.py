@@ -1,13 +1,13 @@
 """Transaction API endpoints."""
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 from datetime import date
 from uuid import UUID
 
 from app.database import get_db
 from app.schemas.transaction import Transaction, TransactionList, TransactionUpdate
-from app.models import Transaction as TransactionModel, User
+from app.models import Transaction as TransactionModel, TransactionTag, Tag, User
 
 router = APIRouter()
 
@@ -43,8 +43,10 @@ async def list_transactions(
     """
     user = get_default_user(db)
 
-    # Build query
-    query = db.query(TransactionModel).filter(
+    # Build query with eager loading of tags
+    query = db.query(TransactionModel).options(
+        joinedload(TransactionModel.tags)
+    ).filter(
         TransactionModel.user_id == user.id,
         TransactionModel.is_hidden == False
     )

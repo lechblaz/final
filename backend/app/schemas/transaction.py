@@ -4,6 +4,7 @@ from typing import Optional, List
 from datetime import date, datetime
 from decimal import Decimal
 from uuid import UUID
+from app.schemas.tag import Tag
 
 
 class TransactionBase(BaseModel):
@@ -43,6 +44,8 @@ class Transaction(TransactionBase):
     location_extracted: Optional[str] = None
     raw_merchant_text: Optional[str] = None
     merchant_confidence: Optional[Decimal] = None
+    # Tags (Phase 3)
+    tags: List[Tag] = []
     is_hidden: bool
     created_at: datetime
     updated_at: datetime
