@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import DashboardPage from './pages/DashboardPage'
 import TransactionsPage from './pages/TransactionsPage'
 import ImportPage from './pages/ImportPage'
 import MerchantsPage from './pages/MerchantsPage'
@@ -18,6 +19,9 @@ function App() {
             <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Finance Manager</h1>
             <div style={{ display: 'flex', gap: '1rem' }}>
               <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>
+                Dashboard
+              </Link>
+              <Link to="/transactions" style={{ color: 'white', textDecoration: 'none' }}>
                 Transactions
               </Link>
               <Link to="/merchants" style={{ color: 'white', textDecoration: 'none' }}>
@@ -34,7 +38,8 @@ function App() {
         </nav>
 
         <Routes>
-          <Route path="/" element={<TransactionsPage />} />
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/merchants" element={<MerchantsPage />} />
           <Route path="/tags" element={<TagsPage />} />
           <Route path="/import" element={<ImportPage />} />
