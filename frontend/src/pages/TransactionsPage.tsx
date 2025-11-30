@@ -133,9 +133,15 @@ export default function TransactionsPage() {
                     <div style={{ fontWeight: 500 }}>
                       {transaction.normalized_merchant_name || transaction.title}
                     </div>
-                    {transaction.normalized_merchant_name && transaction.title !== transaction.normalized_merchant_name && (
+                    {transaction.store_identifier && (
                       <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
-                        {transaction.title}
+                        Store: {transaction.store_identifier}
+                        {transaction.location_extracted && ` • ${transaction.location_extracted}`}
+                      </div>
+                    )}
+                    {!transaction.store_identifier && transaction.location_extracted && (
+                      <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
+                        {transaction.location_extracted}
                       </div>
                     )}
                   </td>

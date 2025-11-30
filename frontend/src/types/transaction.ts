@@ -15,7 +15,11 @@ export interface Transaction {
   amount: number;
   balance_after: number | null;
   currency: string;
+  // Merchant enrichment (Phase 2)
   normalized_merchant_name: string | null;
+  store_identifier: string | null;
+  location_extracted: string | null;
+  raw_merchant_text: string | null;
   merchant_confidence: number | null;
   notes: string | null;
   is_hidden: boolean;

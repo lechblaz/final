@@ -37,7 +37,11 @@ class Transaction(TransactionBase):
     id: UUID
     user_id: UUID
     transaction_hash: str
+    # Merchant enrichment (Phase 2)
     normalized_merchant_name: Optional[str] = None
+    store_identifier: Optional[str] = None
+    location_extracted: Optional[str] = None
+    raw_merchant_text: Optional[str] = None
     merchant_confidence: Optional[Decimal] = None
     is_hidden: bool
     created_at: datetime
